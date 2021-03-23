@@ -1,0 +1,57 @@
+type Book {
+    id: ID!
+    title: String!
+    sub_title: String!
+    author: String!
+    details: [Details] @hasMany
+    type: [Type] @belongsTo
+    status: BookStatus
+}
+type Type {
+    id: ID!
+    name: String!
+    book: [Book] @hasMany
+}
+type Details {
+    id: ID!
+    name: String!
+    book: [Book] @belongsTo
+}
+input Details1 {
+    id: ID!
+    name: String!
+    book: [Book] @spread
+}
+
+type Query {
+    book(id: ID!): Book @field(resolver: "QuerySomething@find")
+    books(Details: ID, title: String @eq): [Book!]!
+        @field(resolver: "QuerySomething@all")
+    types: [Type!]! @all
+    typesPaginate: [Type!]! @paginate
+    details: [Details!]! @all
+}
+type Mutation {
+    createBook(
+        title: String! @rules(apply: ["required", "min:4"])
+        sub_title: String! @rules(apply: ["required", "min:4"])
+        author: String! @rules(apply: ["required", "min:4"])
+        status: BookStatus!
+        input: Details1 @spread
+    ): Book! @field(resolver: "MutateSomethine@create")
+    updateBook(
+        id: ID! @rules(apply: ["required"])
+        title: String! @rules(apply: ["required", "min:4"])
+        sub_title: String! @rules(apply: ["required", "min:4"])
+        author: String! @rules(apply: ["required", "min:4"])
+        status: BookStatus!
+    ): Book! @update
+    deleteBook(id: ID! @rules(apply: ["required"])): Book! @delete
+
+    createDetails1(input: Details1! @spread): Details! @create
+}
+enum BookStatus {
+    availalble @enum(value: 1)
+    not_availalble @enum(value: 2)
+    rented @enum(value: 3)
+}

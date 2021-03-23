@@ -17,11 +17,6 @@ type Details {
     name: String!
     book: [Book] @belongsTo
 }
-input Details1 {
-    id: ID!
-    name: String!
-    book: [Book] @spread
-}
 
 type Query {
     book(id: ID!): Book @field(resolver: "QuerySomething@find")
@@ -36,19 +31,16 @@ type Mutation {
         title: String! @rules(apply: ["required", "min:4"])
         sub_title: String! @rules(apply: ["required", "min:4"])
         author: String! @rules(apply: ["required", "min:4"])
-        status: BookStatus!
-        input: Details1 @spread
+        status: ID!
     ): Book! @field(resolver: "MutateSomethine@create")
     updateBook(
         id: ID! @rules(apply: ["required"])
         title: String! @rules(apply: ["required", "min:4"])
         sub_title: String! @rules(apply: ["required", "min:4"])
         author: String! @rules(apply: ["required", "min:4"])
-        status: BookStatus!
+        status: ID!
     ): Book! @update
     deleteBook(id: ID! @rules(apply: ["required"])): Book! @delete
-
-    createDetails1(input: Details1! @spread): Details! @create
 }
 enum BookStatus {
     availalble @enum(value: 1)

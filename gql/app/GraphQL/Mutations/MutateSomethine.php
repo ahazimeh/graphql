@@ -13,6 +13,7 @@ class MutateSomethine
         // TODO implement the resolver
     }
     public function create($root,array $args){
+        error_log("asda");
         $book = new Book();
         $book->title =$args['title'];
         $book->sub_title =$args['sub_title'];

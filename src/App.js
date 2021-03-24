@@ -6,7 +6,15 @@ import ApolloClient from "apollo-boost";
 import { ApolloProvider } from "@apollo/react-hooks";
 import { useQuery, useMutation } from "@apollo/react-hooks";
 import { gql } from "apollo-boost";
+import { useApolloClient } from "@apollo/react-hooks";
 // import Dogs from "./Dogs";
+import { WebSocketLink } from "apollo-link-ws";
+// const wsLink = new WebSocketLink({
+//   uri: `ws://localhost:8000/graphql`,
+//   options: {
+//     reconnect: true,
+//   },
+// });
 const client = new ApolloClient({
   uri: "http://localhost:8000/graphql",
 });
@@ -65,6 +73,31 @@ const ADD_BOOK = gql`
     }
   }
 `;
+const Book = gql`
+  query book($id: ID!) {
+    book(id: $id) {
+      title
+      sub_title
+    }
+  }
+`;
+function GetBook() {
+  const { loading, error, data } = useQuery(Book, {
+    variables: { id: 1 },
+  });
+  if (loading) return null;
+  if (error) return `Error! ${error}`;
+  console.log(data);
+  return data.book.title;
+  // const [book] = useQuery(Book);
+  // book({
+  //   variables: {
+  //     id: 1,
+  //   },
+  // }).then(function (response) {
+  //   console.log(response.data);
+  // });
+}
 function ADD_BOOKfn() {
   let input;
   const [createBook] = useMutation(ADD_BOOK);
@@ -82,6 +115,8 @@ function ADD_BOOKfn() {
               author: "adas",
               status: 1,
             },
+          }).then(function (response) {
+            console.log(response.data);
           });
 
           input.value = "";
@@ -97,11 +132,13 @@ function ADD_BOOKfn() {
     </div>
   );
 }
+
 const App = () => (
   <ApolloProvider client={client}>
     <div>
       <h2>My first Apollo app 🚀</h2>
       {/* <Dogs /> */}
+      <GetBook />
       <ADD_BOOKfn />
       <ExchangeRates />
     </div>
